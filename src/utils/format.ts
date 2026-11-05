@@ -29,3 +29,22 @@ export function formatDate(value: string | Date | null | undefined): string {
 export function formatCurrency(amount: number): string {
   return currencyFormat.format(amount)
 }
+
+const isoDateFormat = new Intl.DateTimeFormat('en-CA', {
+  timeZone: TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+})
+
+/** Today's date in Bratislava as "YYYY-MM-DD". */
+export function todayIsoDate(): string {
+  return isoDateFormat.format(new Date())
+}
+
+/** Shifts a "YYYY-MM-DD" date by `days` (may be negative), returning "YYYY-MM-DD". */
+export function addDaysIsoDate(isoDate: string, days: number): string {
+  const date = new Date(`${isoDate}T00:00:00Z`)
+  date.setUTCDate(date.getUTCDate() + days)
+  return date.toISOString().slice(0, 10)
+}

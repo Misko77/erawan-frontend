@@ -1,6 +1,7 @@
-import { AppShell, Burger, Button, Group, NavLink, Stack, Text } from '@mantine/core'
+import { AppShell, Burger, Button, Group, Image, NavLink, Stack, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { Link, Outlet, useLocation } from 'react-router'
+import logo from '../assets/logo.jpeg'
 import { useAuth } from '../auth/useAuth.ts'
 
 const menuItems = [
@@ -34,6 +35,11 @@ function RootLayout() {
               size="sm"
               aria-label={opened ? 'Close menu' : 'Open menu'}
             />
+            {user && (
+              <Link to="/" onClick={close} style={{ display: 'flex' }}>
+                <Image src={logo} alt="Logo" h={40} w="auto" fit="contain" />
+              </Link>
+            )}
             <Group gap={4} visibleFrom="sm">
               {menuItems.map((item) => (
                 <Button

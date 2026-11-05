@@ -1,4 +1,6 @@
-import { Badge, Center, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core'
+import { Badge, Button, Center, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core'
+import { IconPlus } from '@tabler/icons-react'
+import { Link } from 'react-router'
 import { useMemo } from 'react'
 import { getMemberPayments, paymentTypeLabels } from '../api/payments.ts'
 import { useApi } from '../api/useApi.ts'
@@ -21,7 +23,17 @@ function MemberPayments({ memberId }: { memberId: string | number }) {
 
   return (
     <Stack gap="sm">
-      <Title order={3}>Platby</Title>
+      <Group justify="space-between" align="center">
+        <Title order={2}>Platby</Title>
+        <Button
+          component={Link}
+          to={`/payments/new?memberId=${encodeURIComponent(memberId)}`}
+          variant="light"
+          leftSection={<IconPlus size={16} />}
+        >
+          Pridať platbu
+        </Button>
+      </Group>
 
       {error && <ErrorAlert error={error} onRetry={reload} />}
 

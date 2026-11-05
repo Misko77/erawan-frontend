@@ -1,13 +1,15 @@
-import { Anchor, Badge, Center, Group, Loader, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { Anchor, Badge, Center, Group, Loader, Paper, SimpleGrid, Stack, Text, Title, Tooltip } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import { ApiError } from '../api/client.ts';
 import { getMember } from '../api/members.ts';
+import { getMemberPaymentTotal } from '../api/payments.ts';
 import { useApi } from '../api/useApi.ts';
 import ErrorAlert from '../components/ErrorAlert.tsx';
 import MemberPayments from '../components/MemberPayments.tsx';
 import MemberStatusButton from '../components/MemberStatusButton.tsx';
+import MemberTrainings from '../components/MemberTrainings.tsx';
 import { formatDateTime } from '../utils/format.ts';
 
 function Field({ label, value }: { label: string; value: ReactNode }) {
@@ -24,6 +26,7 @@ function Field({ label, value }: { label: string; value: ReactNode }) {
 function MemberPage() {
   const { id = '' } = useParams();
   const { data: member, error, loading, reload } = useApi((signal) => getMember(id, signal), [id]);
+  const { data: paymentTotal } = useApi((signal) => getMemberPaymentTotal(id, signal), [id]);
 
   const backLink = (
     <Anchor component={Link} to="/" size="sm">
@@ -74,6 +77,17 @@ function MemberPage() {
           <Badge color={member.isActive ? 'teal' : 'red'} variant="light" size="lg">
             {member.isActive ? 'Aktívny' : 'Neaktívny'}
           </Badge>
+          {paymentTotal && (
+            <Tooltip label="Zostávajúce tréningy">
+              <Badge
+                color={paymentTotal.count > 0 ? 'teal' : 'red'}
+                variant="light"
+                size="lg"
+              >
+                Zostávajúce tréningy: {paymentTotal.count}
+              </Badge>
+            </Tooltip>
+          )}
         </Group>
         <MemberStatusButton member={member} onChanged={reload} />
       </Group>
@@ -86,6 +100,8 @@ function MemberPage() {
           <Field label="Upravený" value={formatDateTime(member.updatedAt)} />
         </SimpleGrid>
       </Paper>
+
+      <MemberTrainings memberId={member.id} />
 
       <MemberPayments memberId={member.id} />
     </Stack>

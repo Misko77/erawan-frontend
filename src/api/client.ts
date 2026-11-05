@@ -1,3 +1,5 @@
+import { supabase } from '../auth/supabase.ts'
+
 const API_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
 
 export class ApiError extends Error {
@@ -18,10 +20,13 @@ export async function apiRequest<T = void>(
   options: { body?: unknown; signal?: AbortSignal } = {},
 ): Promise<T> {
   const { body, signal } = options
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
   const response = await fetch(`${API_URL}${path}`, {
     method,
     headers: {
       Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
