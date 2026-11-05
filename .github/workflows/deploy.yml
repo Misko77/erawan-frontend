@@ -32,6 +32,9 @@ jobs:
       - run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_API_URL: https://erawan-api-byasevcramh0hfde.polandcentral-01.azurewebsites.net
+          VITE_SUPABASE_URL: https://grkcwrfrhpbdfnitpvjq.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_efp-ixM_NuPmOh1PJxZ_fA_SWQ2LXSe
 
       - uses: actions/configure-pages@v5
 

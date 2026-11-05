@@ -1,0 +1,596 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Erawan.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/members": {
+      "get": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "GetMembers",
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "CreateMember",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/members/{id}": {
+      "get": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "GetMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "UpdateMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "DeactivateMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/members/{id}/trainings": {
+      "get": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "GetMemberTrainings",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/members/{id}/payments": {
+      "get": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "GetMemberPayments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payments": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "GetPayments",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "CreatePayment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payments/{id}": {
+      "put": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "UpdatePayment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePaymentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payments/totals": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "GetPaymentTotals",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/trainings": {
+      "get": {
+        "tags": [
+          "Trainings"
+        ],
+        "operationId": "GetTrainings",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Trainings"
+        ],
+        "operationId": "CreateTraining",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/trainings/{id}": {
+      "get": {
+        "tags": [
+          "Trainings"
+        ],
+        "operationId": "GetTraining",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Trainings"
+        ],
+        "operationId": "UpdateTraining",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/trainings/{id}/members": {
+      "put": {
+        "tags": [
+          "Trainings"
+        ],
+        "operationId": "SetTrainingMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTrainingMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateMemberRequest": {
+        "required": [
+          "name",
+          "lastName",
+          "email",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CreatePaymentRequest": {
+        "required": [
+          "memberId",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PaymentType"
+          }
+        }
+      },
+      "CreateTrainingRequest": {
+        "required": [
+          "date",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TrainingType"
+          }
+        }
+      },
+      "PaymentType": {
+        "enum": [
+          "Single",
+          "Bulk10"
+        ]
+      },
+      "SetTrainingMembersRequest": {
+        "required": [
+          "memberIds"
+        ],
+        "type": "object",
+        "properties": {
+          "memberIds": {
+            "type": "array",
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "TrainingType": {
+        "enum": [
+          "Mma",
+          "Kickbox",
+          "FemaleKickbox",
+          "Circuit",
+          "Other"
+        ]
+      },
+      "UpdateMemberRequest": {
+        "required": [
+          "name",
+          "lastName",
+          "email",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "UpdatePaymentRequest": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/PaymentType"
+          }
+        }
+      },
+      "UpdateTrainingRequest": {
+        "required": [
+          "date",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TrainingType"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Members"
+    },
+    {
+      "name": "Payments"
+    },
+    {
+      "name": "Trainings"
+    }
+  ]
+}
