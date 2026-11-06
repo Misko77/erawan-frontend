@@ -8,6 +8,7 @@ const menuItems = [
   { to: '/', label: 'Koblížkovia' },
   { to: '/payments', label: 'Platby' },
   { to: '/trainings', label: 'Tréningy' },
+  { to: '/totals', label: 'Neplatiči' },
 ]
 
 function isActive(pathname: string, to: string) {
