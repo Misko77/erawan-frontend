@@ -45,9 +45,15 @@ export function updatePayment(id: number, type: PaymentType) {
 }
 
 export type PaymentTotal = {
+  memberId: number
   fullName: string
   /** Trainings left: purchased minus attended. Can be negative. */
   count: number
+}
+
+/** GET /payments/totals. One row per active member. */
+export function getPaymentTotals(signal?: AbortSignal) {
+  return apiGet<PaymentTotal[]>('/payments/totals', signal)
 }
 
 export function getMemberPaymentTotal(memberId: string | number, signal?: AbortSignal) {
