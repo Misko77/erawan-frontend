@@ -17,11 +17,10 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 export async function apiRequest<T = void>(
   method: HttpMethod,
   path: string,
-  options: { body?: unknown; signal?: AbortSignal } = {},
+  options: { body?: unknown; signal?: AbortSignal; anonymous?: boolean } = {},
 ): Promise<T> {
-  const { body, signal } = options
-  const { data } = await supabase.auth.getSession()
-  const token = data.session?.access_token
+  const { body, signal, anonymous } = options
+  const token = anonymous ? undefined : (await supabase.auth.getSession()).data.session?.access_token
   const response = await fetch(`${API_URL}${path}`, {
     method,
     headers: {

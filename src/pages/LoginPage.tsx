@@ -1,6 +1,6 @@
-import { Alert, Button, Container, Image, Paper, PasswordInput, Stack, TextInput, Title } from '@mantine/core'
+import { Alert, Anchor, Button, Container, Image, Paper, PasswordInput, Stack, TextInput, Title } from '@mantine/core'
 import { useState, type FormEvent } from 'react'
-import { Navigate, useLocation, useNavigate, type Location } from 'react-router'
+import { Link, Navigate, useLocation, useNavigate, type Location } from 'react-router'
 import logo from '../assets/logo.jpeg'
 import { useAuth } from '../auth/useAuth.ts'
 
@@ -37,7 +37,7 @@ function LoginPage() {
     <Container size={420} py={{ base: 'xl', sm: 80 }}>
       <Image src={logo} alt="Logo" w={160} mx="auto" mb="md" />
       <Title order={2} ta="center" mb="lg">
-        Log in
+        Prihlásiť
       </Title>
       <Paper withBorder shadow="sm" p={{ base: 'md', sm: 'xl' }}>
         <form onSubmit={handleSubmit}>
@@ -62,11 +62,14 @@ function LoginPage() {
               </Alert>
             )}
             <Button type="submit" fullWidth loading={submitting}>
-              Log in
+              Prihlás 
             </Button>
           </Stack>
         </form>
       </Paper>
+      <Anchor component={Link} to="/public" display="block" ta="center" size="sm" mt="md">
+        Zobraziť zostatok tréningov bez prihlásenia
+      </Anchor>
     </Container>
   )
 }

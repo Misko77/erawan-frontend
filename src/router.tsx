@@ -9,6 +9,7 @@ import NewPaymentPage from './pages/NewPaymentPage.tsx'
 import NewTrainingPage from './pages/NewTrainingPage.tsx'
 import NotFound from './pages/NotFound.tsx'
 import PaymentsPage from './pages/PaymentsPage.tsx'
+import PublicUserPage from './pages/PublicUserPage.tsx'
 import TotalsPage from './pages/TotalsPage.tsx'
 import TrainingPage from './pages/TrainingPage.tsx'
 import TrainingsPage from './pages/TrainingsPage.tsx'
@@ -16,6 +17,7 @@ import TrainingsPage from './pages/TrainingsPage.tsx'
 export const router = createBrowserRouter(
   [
     { path: '/login', element: <LoginPage /> },
+    { path: '/public', element: <PublicUserPage /> },
     {
       path: '/',
       element: (

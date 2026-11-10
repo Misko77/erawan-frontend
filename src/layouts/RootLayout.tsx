@@ -60,7 +60,7 @@ function RootLayout() {
             <Group gap="sm" wrap="nowrap" visibleFrom="sm">
               <Text size="sm">{user.name}</Text>
               <Button variant="default" size="xs" onClick={logout}>
-                Log out
+                Odhlásiť
               </Button>
             </Group>
           )}
@@ -94,7 +94,7 @@ function RootLayout() {
                   logout()
                 }}
               >
-                Log out
+                Odhlásiť
               </Button>
             </Group>
           )}
