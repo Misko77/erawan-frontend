@@ -9,6 +9,7 @@ const menuItems = [
   { to: '/payments', label: 'Platby' },
   { to: '/trainings', label: 'Tréningy' },
   { to: '/totals', label: 'Neplatiči' },
+  { to: '/export', label: 'Export' },
 ]
 
 function isActive(pathname: string, to: string) {
