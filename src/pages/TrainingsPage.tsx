@@ -1,4 +1,5 @@
-import { Badge, Button, Center, Group, Loader, Paper, Stack, Table, Text, TextInput, Title } from '@mantine/core'
+import { Badge, Button, Center, Group, Loader, Paper, Stack, Table, Text, Title } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
 import { IconPlus } from '@tabler/icons-react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { getTrainings, trainingTypeColors, trainingTypeLabels } from '../api/trainings.ts'
@@ -42,19 +43,23 @@ function TrainingsPage() {
       </Group>
 
       <Group gap="sm" align="flex-end">
-        <TextInput
+        <DatePickerInput
           label="Od"
-          type="date"
-          value={from}
-          max={to || undefined}
-          onChange={(e) => setDateParam('od', e.currentTarget.value, defaultFrom)}
+          valueFormat="DD.MM.YYYY"
+          placeholder="dd.mm.rrrr"
+          clearable
+          value={from || null}
+          maxDate={to || undefined}
+          onChange={(value) => setDateParam('od', value ?? '', defaultFrom)}
         />
-        <TextInput
+        <DatePickerInput
           label="Do"
-          type="date"
-          value={to}
-          min={from || undefined}
-          onChange={(e) => setDateParam('do', e.currentTarget.value, defaultTo)}
+          valueFormat="DD.MM.YYYY"
+          placeholder="dd.mm.rrrr"
+          clearable
+          value={to || null}
+          minDate={from || undefined}
+          onChange={(value) => setDateParam('do', value ?? '', defaultTo)}
         />
         {loading && trainings && <Loader size="sm" mb={8} />}
       </Group>

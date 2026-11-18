@@ -1,4 +1,5 @@
-import { Anchor, Button, Group, Paper, Select, SimpleGrid, Stack, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Group, Paper, Select, SimpleGrid, Stack, Title } from '@mantine/core';
+import { DatePickerInput } from '@mantine/dates';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { IconChevronLeft } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -61,9 +62,10 @@ function NewTrainingPage() {
         <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
           <Stack>
             <SimpleGrid cols={{ base: 1, sm: 2 }}>
-              <TextInput
+              <DatePickerInput
                 label="Dátum"
-                type="date"
+                valueFormat="DD.MM.YYYY"
+                placeholder="dd.mm.rrrr"
                 withAsterisk
                 key={form.key('date')}
                 {...form.getInputProps('date')}
