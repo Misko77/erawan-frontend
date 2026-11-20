@@ -64,8 +64,6 @@ function MembersPage() {
           </ThemeIcon>
         )}
       </Table.Td>
-      <Table.Td>{member.phone ?? '—'}</Table.Td>
-      <Table.Td>{member.email ?? '—'}</Table.Td>
     </Table.Tr>
   ));
 
@@ -94,7 +92,7 @@ function MembersPage() {
         </Center>
       ) : members && (
         <Paper withBorder shadow="xs" radius="md">
-          <Table.ScrollContainer minWidth={640}>
+          <Table.ScrollContainer minWidth={360}>
             <Table striped highlightOnHover verticalSpacing="sm">
               <Table.Thead>
                 <Table.Tr>
@@ -102,14 +100,12 @@ function MembersPage() {
                   <Table.Th>Meno</Table.Th>
                   <Table.Th>Priezvisko</Table.Th>
                   <Table.Th>Aktivny</Table.Th>
-                  <Table.Th>Telefon</Table.Th>
-                  <Table.Th>Email</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
                 {rows.length > 0 ? rows : (
                   <Table.Tr>
-                    <Table.Td colSpan={6}>
+                    <Table.Td colSpan={4}>
                       <Text c="dimmed" ta="center" py="md">{filter.empty}</Text>
                     </Table.Td>
                   </Table.Tr>

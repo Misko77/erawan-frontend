@@ -37,8 +37,8 @@ function NewTrainingPage() {
     setSaving(true);
     setError(undefined);
     try {
-      await createTraining({ date: values.date, type: values.type! });
-      navigate('/trainings', { replace: true });
+      const training = await createTraining({ date: values.date, type: values.type! });
+      navigate(`/trainings/${training.id}`, { replace: true });
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
       setSaving(false);

@@ -49,7 +49,7 @@ export type CreateTrainingRequest = {
 }
 
 export function createTraining(request: CreateTrainingRequest) {
-  return apiRequest<Training | undefined>('POST', '/trainings', { body: request })
+  return apiRequest<Training>('POST', '/trainings', { body: request })
 }
 
 export function getTraining(id: string | number, signal?: AbortSignal) {
