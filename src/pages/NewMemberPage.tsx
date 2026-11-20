@@ -27,7 +27,7 @@ function NewMemberPage() {
     validate: {
       name: isNotEmpty('Zadajte meno'),
       lastName: isNotEmpty('Zadajte priezvisko'),
-      email: (value) => (value.trim() === '' ? null : isEmail('Neplatný email')(value.trim())),
+      email: (value) => (value.trim() === '' ? null : isEmail('Neplatný e-mail')(value.trim())),
     },
   });
 
@@ -81,7 +81,7 @@ function NewMemberPage() {
                 {...form.getInputProps('lastName')}
               />
               <TextInput
-                label="Email"
+                label="E-mail"
                 type="email"
                 autoComplete="email"
                 placeholder="meno@example.com"

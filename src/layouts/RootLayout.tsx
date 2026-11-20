@@ -3,6 +3,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { Link, Outlet, useLocation } from 'react-router'
 import logo from '../assets/logo.jpeg'
 import { useAuth } from '../auth/useAuth.ts'
+import ColorSchemeToggle from '../components/ColorSchemeToggle.tsx'
 
 const menuItems = [
   { to: '/', label: 'Koblížkovia' },
@@ -35,7 +36,7 @@ function RootLayout() {
               onClick={toggle}
               hiddenFrom="sm"
               size="sm"
-              aria-label={opened ? 'Close menu' : 'Open menu'}
+              aria-label={opened ? 'Zavrieť menu' : 'Otvoriť menu'}
             />
             {user && (
               <Link to="/" onClick={close} style={{ display: 'flex' }}>
@@ -57,14 +58,17 @@ function RootLayout() {
             </Group>
           </Group>
 
-          {user && (
-            <Group gap="sm" wrap="nowrap" visibleFrom="sm">
-              <Text size="sm">{user.name}</Text>
-              <Button variant="default" size="xs" onClick={logout}>
-                Odhlásiť
-              </Button>
-            </Group>
-          )}
+          <Group gap="sm" wrap="nowrap">
+            <ColorSchemeToggle />
+            {user && (
+              <Group gap="sm" wrap="nowrap" visibleFrom="sm">
+                <Text size="sm">{user.name}</Text>
+                <Button variant="default" size="xs" onClick={logout}>
+                  Odhlásiť
+                </Button>
+              </Group>
+            )}
+          </Group>
         </Group>
       </AppShell.Header>
 

@@ -2,7 +2,7 @@ import { Badge, Button, Center, Group, Loader, Paper, Stack, Table, Text, Title 
 import { IconPlus } from '@tabler/icons-react'
 import { Link } from 'react-router'
 import { useMemo } from 'react'
-import { getMemberPayments, paymentTypeLabels } from '../api/payments.ts'
+import { getMemberPayments, paymentTypeBadge, paymentTypeLabels } from '../api/payments.ts'
 import { useApi } from '../api/useApi.ts'
 import { formatCurrency, formatDateTime } from '../utils/format.ts'
 import ErrorAlert from './ErrorAlert.tsx'
@@ -58,7 +58,7 @@ function MemberPayments({ memberId }: { memberId: string | number }) {
                     <Table.Tr key={payment.id}>
                       <Table.Td>{formatDateTime(payment.createdAt)}</Table.Td>
                       <Table.Td>
-                        <Badge variant="light" color={payment.type === 'Bulk10' ? 'violet' : 'gray'}>
+                        <Badge {...(paymentTypeBadge[payment.type] ?? { color: 'gray', variant: 'light' })}>
                           {paymentTypeLabels[payment.type] ?? payment.type}
                         </Badge>
                       </Table.Td>
