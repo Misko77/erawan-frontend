@@ -27,7 +27,7 @@ function LoginPage() {
       await login(email.trim(), password)
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      setError(err instanceof Error ? err.message : 'Prihlásenie zlyhalo')
     } finally {
       setSubmitting(false)
     }
@@ -37,7 +37,7 @@ function LoginPage() {
     <Container size={420} py={{ base: 'xl', sm: 80 }}>
       <Image src={logo} alt="Logo" w={160} mx="auto" mb="md" />
       <Title order={2} ta="center" mb="lg">
-        Prihlásiť
+        Prihlásenie
       </Title>
       <Paper withBorder shadow="sm" p={{ base: 'md', sm: 'xl' }}>
         <form onSubmit={handleSubmit}>
@@ -45,14 +45,14 @@ function LoginPage() {
             <TextInput
               type="email"
               required
-              label="Email"
-              placeholder="you@example.com"
+              label="E-mail"
+              placeholder="meno@example.com"
               value={email}
               onChange={(e) => setEmail(e.currentTarget.value)}
             />
             <PasswordInput
               required
-              label="Password"
+              label="Heslo"
               value={password}
               onChange={(e) => setPassword(e.currentTarget.value)}
             />
@@ -62,7 +62,7 @@ function LoginPage() {
               </Alert>
             )}
             <Button type="submit" fullWidth loading={submitting}>
-              Prihlás 
+              Prihlásiť sa
             </Button>
           </Stack>
         </form>

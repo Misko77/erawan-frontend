@@ -4,10 +4,10 @@ import { Link } from 'react-router'
 function NotFound() {
   return (
     <Stack align="center" py="xl">
-      <Title order={2}>Page not found</Title>
+      <Title order={2}>Stránka sa nenašla</Title>
       <Text>
         <Anchor component={Link} to="/">
-          Go back home
+          Späť na úvod
         </Anchor>
       </Text>
     </Stack>

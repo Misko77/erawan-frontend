@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 import { getMembers } from '../api/members.ts'
 import {
   getPayments,
+  paymentTypeBadge,
   paymentTypeLabels,
   paymentTypeOptions,
   updatePayment,
@@ -102,7 +103,7 @@ function PaymentsPage() {
       <Table.Td>{formatDateTime(payment.createdAt)}</Table.Td>
       <Table.Td>{memberName(payment.memberId)}</Table.Td>
       <Table.Td>
-        <Badge variant="light" color={payment.type === 'Bulk10' ? 'violet' : 'gray'}>
+        <Badge {...(paymentTypeBadge[payment.type] ?? { color: 'gray', variant: 'light' })}>
           {paymentTypeLabels[payment.type] ?? payment.type}
         </Badge>
       </Table.Td>

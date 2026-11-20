@@ -95,7 +95,7 @@ function MemberPage() {
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
           <Field label="Id" value={member.id} />
           <Field label="Telefón" value={member.phone ?? '—'} />
-          <Field label="Email" value={member.email ?? '—'} />
+          <Field label="E-mail" value={member.email ?? '—'} />
           <Field label="Vytvorený" value={formatDateTime(member.createdAt)} />
           <Field label="Upravený" value={formatDateTime(member.updatedAt)} />
         </SimpleGrid>

@@ -16,6 +16,12 @@ export const paymentTypeLabels: Record<PaymentType, string> = {
   Bulk10: 'Permanentka (10)',
 }
 
+/** Badge style per type: single entry dark green (filled), 10-entry pass light green. */
+export const paymentTypeBadge: Record<PaymentType, { color: string; variant: 'filled' | 'light' }> = {
+  Single: { color: 'green.8', variant: 'filled' },
+  Bulk10: { color: 'green', variant: 'light' },
+}
+
 export const paymentTypeOptions = (Object.keys(paymentTypeLabels) as PaymentType[]).map((value) => ({
   value,
   label: paymentTypeLabels[value],

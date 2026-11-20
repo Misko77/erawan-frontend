@@ -99,7 +99,7 @@ function MembersPage() {
                   <Table.Th>Id</Table.Th>
                   <Table.Th>Meno</Table.Th>
                   <Table.Th>Priezvisko</Table.Th>
-                  <Table.Th>Aktivny</Table.Th>
+                  <Table.Th>Aktívny</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
