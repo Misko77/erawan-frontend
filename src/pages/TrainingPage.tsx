@@ -1,5 +1,6 @@
-import { ActionIcon, Anchor, Badge, Button, Center, Group, Loader, MultiSelect, Paper, Popover, SimpleGrid, Stack, Table, Text, Title, Tooltip } from '@mantine/core';
-import { IconChevronLeft, IconUserMinus, IconUserPlus } from '@tabler/icons-react';
+import { ActionIcon, Anchor, Badge, Button, Center, Checkbox, Group, Loader, Modal, Paper, Popover, ScrollArea, SimpleGrid, Stack, Table, Text, TextInput, Title, Tooltip, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { IconChevronLeft, IconSearch, IconUserMinus, IconUserPlus } from '@tabler/icons-react';
 import { useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { ApiError } from '../api/client.ts';
@@ -20,71 +21,111 @@ function Field({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function AddMembersForm({
+/** Modal body; mounted only while the modal is open, so members reload and selection resets on each open. */
+function AddMembersModalContent({
   trainingId,
   attendees,
   onSaved,
+  onCancel,
 }: {
   trainingId: string | number;
   attendees: Member[];
   onSaved: () => void;
+  onCancel: () => void;
 }) {
   const { data: allMembers, error: loadError, reload } = useApi(getMembers, []);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<Error>();
 
   const attendeeIds = new Set(attendees.map((m) => m.id));
-  const options = (allMembers ?? [])
+  const candidates = (allMembers ?? [])
     .filter((m) => m.isActive && !attendeeIds.has(m.id))
-    .sort((a, b) => a.lastName.localeCompare(b.lastName, 'sk') || a.name.localeCompare(b.name, 'sk'))
-    .map((m) => ({ value: String(m.id), label: `${m.lastName} ${m.name}` }));
+    .sort((a, b) => a.lastName.localeCompare(b.lastName, 'sk') || a.name.localeCompare(b.name, 'sk'));
+  const query = search.trim().toLocaleLowerCase('sk');
+  const visible = query
+    ? candidates.filter((m) => `${m.lastName} ${m.name}`.toLocaleLowerCase('sk').includes(query))
+    : candidates;
+
+  const toggle = (id: number) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   const handleSave = async () => {
     setSaving(true);
     setSaveError(undefined);
     try {
       // PUT replaces the whole list, so send existing attendees + the new ones
-      await setTrainingMembers(trainingId, [...attendeeIds, ...selected.map(Number)]);
-      setSelected([]);
+      await setTrainingMembers(trainingId, [...attendeeIds, ...selected]);
       onSaved();
     } catch (e) {
       setSaveError(e instanceof Error ? e : new Error(String(e)));
-    } finally {
       setSaving(false);
     }
   };
 
   return (
-    <Paper withBorder shadow="xs" radius="md" p={{ base: 'md', sm: 'lg' }}>
-      <Stack gap="sm">
-        {loadError && <ErrorAlert error={loadError} onRetry={reload} />}
-        {saveError && <ErrorAlert error={saveError} title="Uloženie zlyhalo" />}
-        <Group align="flex-end" gap="sm">
-          <MultiSelect
-            label="Pridať účastníkov"
-            placeholder={allMembers ? (options.length > 0 ? 'Vyhľadať člena' : 'Všetci aktívni členovia sú pridaní') : 'Načítavam…'}
-            data={options}
-            value={selected}
-            onChange={setSelected}
-            searchable
-            clearable
-            hidePickedOptions
-            nothingFoundMessage="Nenašiel sa žiadny člen"
-            disabled={!allMembers || options.length === 0 || saving}
-            style={{ flex: 1, minWidth: 240 }}
+    <Stack gap="sm">
+      {loadError && <ErrorAlert error={loadError} onRetry={reload} />}
+      {saveError && <ErrorAlert error={saveError} title="Uloženie zlyhalo" />}
+
+      {!allMembers ? (
+        !loadError && (
+          <Center py="lg">
+            <Loader size="sm" />
+          </Center>
+        )
+      ) : candidates.length === 0 ? (
+        <Text c="dimmed" ta="center" py="md">Všetci aktívni členovia sú pridaní</Text>
+      ) : (
+        <>
+          <TextInput
+            placeholder="Vyhľadať člena"
+            leftSection={<IconSearch size={16} />}
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+            data-autofocus
           />
-          <Button
-            leftSection={<IconUserPlus size={16} />}
-            onClick={handleSave}
-            loading={saving}
-            disabled={selected.length === 0}
-          >
-            Uložiť
-          </Button>
-        </Group>
-      </Stack>
-    </Paper>
+          <ScrollArea.Autosize mah={{ base: 'calc(100dvh - 220px)', sm: '50vh' }} type="auto">
+            <Stack gap={4}>
+              {visible.length > 0 ? (
+                visible.map((m) => (
+                  <Checkbox
+                    key={m.id}
+                    label={`${m.lastName} ${m.name}`}
+                    checked={selected.has(m.id)}
+                    onChange={() => toggle(m.id)}
+                    disabled={saving}
+                    p="xs"
+                  />
+                ))
+              ) : (
+                <Text c="dimmed" ta="center" py="md">Nenašiel sa žiadny člen</Text>
+              )}
+            </Stack>
+          </ScrollArea.Autosize>
+        </>
+      )}
+
+      <Group justify="flex-end" mt="sm">
+        <Button variant="default" onClick={onCancel} disabled={saving}>
+          Zrušiť
+        </Button>
+        <Button
+          leftSection={<IconUserPlus size={16} />}
+          onClick={handleSave}
+          loading={saving}
+          disabled={selected.size === 0}
+        >
+          Pridať{selected.size > 0 ? ` (${selected.size})` : ''}
+        </Button>
+      </Group>
+    </Stack>
   );
 }
 
@@ -138,6 +179,9 @@ function TrainingMembers({ trainingId }: { trainingId: string | number }) {
     (signal) => getTrainingMembers(trainingId, signal),
     [trainingId],
   );
+  const [addOpened, setAddOpened] = useState(false);
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const [removingId, setRemovingId] = useState<number>();
   const [removeError, setRemoveError] = useState<Error>();
 
@@ -158,16 +202,41 @@ function TrainingMembers({ trainingId }: { trainingId: string | number }) {
 
   return (
     <Stack gap="sm">
-      <Group gap="sm" align="center">
-        <Title order={2}>Účastníci</Title>
+      <Group justify="space-between" align="center">
+        <Group gap="sm" align="center">
+          <Title order={2}>Účastníci</Title>
+          {members && (
+            <Badge variant="light" size="lg">
+              {members.length}
+            </Badge>
+          )}
+        </Group>
         {members && (
-          <Badge variant="light" size="lg">
-            {members.length}
-          </Badge>
+          <Button leftSection={<IconUserPlus size={16} />} onClick={() => setAddOpened(true)}>
+            Pridať účastníkov
+          </Button>
         )}
       </Group>
 
-      {members && <AddMembersForm trainingId={trainingId} attendees={members} onSaved={reload} />}
+      <Modal
+        opened={addOpened}
+        onClose={() => setAddOpened(false)}
+        title="Pridať účastníkov"
+        fullScreen={isMobile}
+        transitionProps={isMobile ? { transition: 'slide-up' } : undefined}
+      >
+        {members && (
+          <AddMembersModalContent
+            trainingId={trainingId}
+            attendees={members}
+            onCancel={() => setAddOpened(false)}
+            onSaved={() => {
+              setAddOpened(false);
+              reload();
+            }}
+          />
+        )}
+      </Modal>
 
       {error && <ErrorAlert error={error} onRetry={reload} />}
       {removeError && <ErrorAlert error={removeError} title="Odobratie zlyhalo" />}
@@ -178,14 +247,12 @@ function TrainingMembers({ trainingId }: { trainingId: string | number }) {
         </Center>
       ) : members && (
         <Paper withBorder shadow="xs" radius="md">
-          <Table.ScrollContainer minWidth={480}>
+          <Table.ScrollContainer minWidth={320}>
             <Table striped highlightOnHover verticalSpacing="sm">
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Meno</Table.Th>
                   <Table.Th>Priezvisko</Table.Th>
-                  <Table.Th>Telefón</Table.Th>
-                  <Table.Th>Email</Table.Th>
                   <Table.Th w={1} />
                 </Table.Tr>
               </Table.Thead>
@@ -204,8 +271,6 @@ function TrainingMembers({ trainingId }: { trainingId: string | number }) {
                     >
                       <Table.Td>{member.name}</Table.Td>
                       <Table.Td>{member.lastName}</Table.Td>
-                      <Table.Td>{member.phone ?? '—'}</Table.Td>
-                      <Table.Td>{member.email ?? '—'}</Table.Td>
                       <Table.Td onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                         {removingId === member.id ? (
                           <Loader size="xs" color="red" m={6} />
@@ -217,7 +282,7 @@ function TrainingMembers({ trainingId }: { trainingId: string | number }) {
                   ))
                 ) : (
                   <Table.Tr>
-                    <Table.Td colSpan={5}>
+                    <Table.Td colSpan={3}>
                       <Text c="dimmed" ta="center" py="md">Žiadni účastníci</Text>
                     </Table.Td>
                   </Table.Tr>
