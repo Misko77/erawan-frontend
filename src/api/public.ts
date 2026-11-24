@@ -3,8 +3,10 @@ import { apiRequest } from './client.ts'
 export type PublicMember = {
   name: string
   lastName: string
-  /** Trainings left: purchased minus attended. Can be negative. */
-  count: number
+  /** Group trainings left (all non-private types): purchased minus attended. Can be negative. */
+  groupCount: number
+  /** Private trainings left: purchased minus attended. Can be negative. */
+  privateCount: number
 }
 
 /** GET /public/members/{lastName}?firstName=. Anonymous endpoint, no auth header is sent. */

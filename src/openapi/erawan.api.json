@@ -5,10 +5,28 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/users": {
+    "/public/members/{lastName}": {
       "get": {
         "tags": [
-          "Users"
+          "Public"
+        ],
+        "operationId": "GetMemberByLastName",
+        "parameters": [
+          {
+            "name": "lastName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -117,7 +135,9 @@
             "description": "OK"
           }
         }
-      },
+      }
+    },
+    "/members/{id}/deactivate": {
       "delete": {
         "tags": [
           "Members"
@@ -158,6 +178,19 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "ps",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -173,6 +206,69 @@
           "Members"
         ],
         "operationId": "GetMemberPayments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ps",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/members/{id}/payments/total": {
+      "get": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "GetMemberPaymentTotal",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/members/{id}/activate": {
+      "put": {
+        "tags": [
+          "Members"
+        ],
+        "operationId": "ActivateMember",
         "parameters": [
           {
             "name": "id",
@@ -385,6 +481,29 @@
       }
     },
     "/trainings/{id}/members": {
+      "get": {
+        "tags": [
+          "Trainings"
+        ],
+        "operationId": "GetTrainingMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "put": {
         "tags": [
           "Trainings"
@@ -418,6 +537,41 @@
           }
         }
       }
+    },
+    "/analytics/export/{year}/{month}": {
+      "get": {
+        "tags": [
+          "AnalyticsEndpoints"
+        ],
+        "operationId": "GetMonthlyAnalytics",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -427,7 +581,8 @@
           "name",
           "lastName",
           "email",
-          "phone"
+          "phone",
+          "memberNumber"
         ],
         "type": "object",
         "properties": {
@@ -444,6 +599,13 @@
             ]
           },
           "phone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "memberNumber": {
+            "maxLength": 10,
             "type": [
               "null",
               "string"
@@ -490,7 +652,10 @@
       "PaymentType": {
         "enum": [
           "Single",
-          "Bulk10"
+          "Bulk10",
+          "SinglePrivate",
+          "Bulk5Private",
+          "SingleRecommendation"
         ]
       },
       "SetTrainingMembersRequest": {
@@ -514,11 +679,14 @@
       },
       "TrainingType": {
         "enum": [
-          "Mma",
+          "FitBox",
           "Kickbox",
-          "FemaleKickbox",
           "Circuit",
-          "Other"
+          "Kids",
+          "Mma",
+          "Bjj",
+          "Sparring",
+          "Private"
         ]
       },
       "UpdateMemberRequest": {
@@ -526,7 +694,8 @@
           "name",
           "lastName",
           "email",
-          "phone"
+          "phone",
+          "memberNumber"
         ],
         "type": "object",
         "properties": {
@@ -543,6 +712,13 @@
             ]
           },
           "phone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "memberNumber": {
+            "maxLength": 10,
             "type": [
               "null",
               "string"
@@ -581,7 +757,7 @@
   },
   "tags": [
     {
-      "name": "Users"
+      "name": "Public"
     },
     {
       "name": "Members"
@@ -591,6 +767,9 @@
     },
     {
       "name": "Trainings"
+    },
+    {
+      "name": "AnalyticsEndpoints"
     }
   ]
 }

@@ -1,10 +1,11 @@
-import { Anchor, Badge, Button, Container, Group, Image, Paper, Stack, Text, TextInput, Title } from '@mantine/core'
+import { Anchor, Button, Container, Group, Image, Paper, Stack, Text, TextInput, Title } from '@mantine/core'
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { ApiError } from '../api/client.ts'
 import { getPublicMembers, type PublicMember } from '../api/public.ts'
 import logo from '../assets/logo.jpeg'
 import ErrorAlert from '../components/ErrorAlert.tsx'
+import { TrainingBalanceBadges } from '../components/TrainingBalance.tsx'
 
 function PublicUserPage() {
   const [firstName, setFirstName] = useState('')
@@ -72,13 +73,13 @@ function PublicUserPage() {
           <Paper key={`${member.name}-${member.lastName}-${i}`} withBorder shadow="xs" p="md">
             <Group justify="space-between" wrap="nowrap">
               <Text fw={500}>{member.name} {member.lastName}</Text>
-              <Badge
-                size="lg"
-                variant="light"
-                color={member.count < 0 ? 'red' : member.count === 0 ? 'yellow' : 'teal'}
-              >
-                {member.count}
-              </Badge>
+              <Stack gap={4} align="flex-end">
+                <TrainingBalanceBadges
+                  groupCount={member.groupCount}
+                  privateCount={member.privateCount}
+                  size="lg"
+                />
+              </Stack>
             </Group>
           </Paper>
         ))}
