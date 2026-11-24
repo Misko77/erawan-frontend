@@ -1,7 +1,7 @@
 import { apiGet, apiRequest } from './client.ts'
 import type { Member } from './members.ts'
 
-export type TrainingType = 'Mma' | 'Kickbox' | 'FemaleKickbox' | 'Circuit' | 'Other'
+export type TrainingType = 'FitBox' | 'Kickbox' | 'Circuit' | 'Kids' | 'Mma' | 'Bjj' | 'Sparring' | 'Private'
 
 export type Training = {
   id: number
@@ -14,19 +14,25 @@ export type Training = {
 }
 
 export const trainingTypeLabels: Record<TrainingType, string> = {
-  Mma: 'MMA',
+  FitBox: 'FitBox',
   Kickbox: 'Kickbox',
-  FemaleKickbox: 'Kickbox (ženy)',
   Circuit: 'Kruhový tréning',
-  Other: 'Iné',
+  Kids: 'Deti',
+  Mma: 'MMA',
+  Bjj: 'BJJ',
+  Sparring: 'Sparring',
+  Private: 'Súkromný tréning',
 }
 
 export const trainingTypeColors: Record<TrainingType, string> = {
-  Mma: 'red',
+  FitBox: 'pink',
   Kickbox: 'blue',
-  FemaleKickbox: 'pink',
   Circuit: 'orange',
-  Other: 'gray',
+  Kids: 'yellow',
+  Mma: 'red',
+  Bjj: 'teal',
+  Sparring: 'grape',
+  Private: 'violet',
 }
 
 export function getMemberTrainings(memberId: string | number, signal?: AbortSignal) {

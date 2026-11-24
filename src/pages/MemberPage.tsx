@@ -1,5 +1,5 @@
-import { Anchor, Badge, Center, Group, Loader, Paper, SimpleGrid, Stack, Text, Title, Tooltip } from '@mantine/core';
-import { IconChevronLeft } from '@tabler/icons-react';
+import { Anchor, Badge, Button, Center, Group, Loader, Paper, SimpleGrid, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { IconChevronLeft, IconPencil } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import { ApiError } from '../api/client.ts';
@@ -10,6 +10,7 @@ import ErrorAlert from '../components/ErrorAlert.tsx';
 import MemberPayments from '../components/MemberPayments.tsx';
 import MemberStatusButton from '../components/MemberStatusButton.tsx';
 import MemberTrainings from '../components/MemberTrainings.tsx';
+import { TrainingBalanceBadges } from '../components/TrainingBalance.tsx';
 import { formatDateTime } from '../utils/format.ts';
 
 function Field({ label, value }: { label: string; value: ReactNode }) {
@@ -79,21 +80,34 @@ function MemberPage() {
           </Badge>
           {paymentTotal && (
             <Tooltip label="Zostávajúce tréningy">
-              <Badge
-                color={paymentTotal.count > 0 ? 'teal' : 'red'}
-                variant="light"
-                size="lg"
-              >
-                Zostávajúce tréningy: {paymentTotal.count}
-              </Badge>
+              <Group gap="xs">
+                <TrainingBalanceBadges
+                  groupCount={paymentTotal.groupCount}
+                  privateCount={paymentTotal.privateCount}
+                  groupLabel="Skupinové tréningy"
+                  privateLabel="Súkromné tréningy"
+                  size="lg"
+                />
+              </Group>
             </Tooltip>
           )}
         </Group>
-        <MemberStatusButton member={member} onChanged={reload} />
+        <Group gap="sm" align="flex-start">
+          <Button
+            component={Link}
+            to={`/members/${member.id}/edit`}
+            variant="light"
+            leftSection={<IconPencil size={16} />}
+          >
+            Upraviť
+          </Button>
+          <MemberStatusButton member={member} onChanged={reload} />
+        </Group>
       </Group>
       <Paper withBorder shadow="xs" radius="md" p={{ base: 'md', sm: 'lg' }}>
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
           <Field label="Id" value={member.id} />
+          <Field label="Číslo karty" value={member.memberNumber ?? '—'} />
           <Field label="Telefón" value={member.phone ?? '—'} />
           <Field label="E-mail" value={member.email ?? '—'} />
           <Field label="Vytvorený" value={formatDateTime(member.createdAt)} />

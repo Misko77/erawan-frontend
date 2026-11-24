@@ -1,6 +1,6 @@
 import { apiGet, apiRequest } from './client.ts'
 
-export type PaymentType = 'Single' | 'Bulk10'
+export type PaymentType = 'Single' | 'Bulk10' | 'SinglePrivate' | 'Bulk5Private' | 'SingleRecommendation'
 
 export type Payment = {
   id: number
@@ -14,12 +14,21 @@ export type Payment = {
 export const paymentTypeLabels: Record<PaymentType, string> = {
   Single: 'Jednorazová',
   Bulk10: 'Permanentka (10)',
+  SinglePrivate: 'Súkromný tréning',
+  Bulk5Private: 'Súkromná permanentka (5)',
+  SingleRecommendation: 'Jednorazová (odporúčanie)',
 }
 
-/** Badge style per type: single entry dark green (filled), 10-entry pass light green. */
+/**
+ * Badge style per type: group entries green, private entries violet, recommendation teal.
+ * Single entries are filled, passes are light.
+ */
 export const paymentTypeBadge: Record<PaymentType, { color: string; variant: 'filled' | 'light' }> = {
   Single: { color: 'green.8', variant: 'filled' },
   Bulk10: { color: 'green', variant: 'light' },
+  SinglePrivate: { color: 'violet.8', variant: 'filled' },
+  Bulk5Private: { color: 'violet', variant: 'light' },
+  SingleRecommendation: { color: 'teal', variant: 'light' },
 }
 
 export const paymentTypeOptions = (Object.keys(paymentTypeLabels) as PaymentType[]).map((value) => ({
@@ -53,8 +62,10 @@ export function updatePayment(id: number, type: PaymentType) {
 export type PaymentTotal = {
   memberId: number
   fullName: string
-  /** Trainings left: purchased minus attended. Can be negative. */
-  count: number
+  /** Group trainings left (all non-private types): purchased minus attended. Can be negative. */
+  groupCount: number
+  /** Private trainings left: purchased minus attended. Can be negative. */
+  privateCount: number
 }
 
 /** GET /payments/totals. One row per active member. */

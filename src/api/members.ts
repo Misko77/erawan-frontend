@@ -7,6 +7,7 @@ export type Member = {
   lastName: string
   email: string | null
   phone: string | null
+  memberNumber: string | null
   createdAt: string
   updatedAt: string | null
 }
@@ -32,9 +33,17 @@ export type CreateMemberRequest = {
   lastName: string
   email: string | null
   phone: string | null
+  memberNumber: string | null
 }
 
 /** POST /members. The API may or may not return the created member. */
 export function createMember(request: CreateMemberRequest) {
   return apiRequest<Member | undefined>('POST', '/members', { body: request })
+}
+
+export type UpdateMemberRequest = CreateMemberRequest
+
+/** PUT /members/{id} */
+export function updateMember(id: string | number, request: UpdateMemberRequest) {
+  return apiRequest<Member | undefined>('PUT', `/members/${encodeURIComponent(id)}`, { body: request })
 }
