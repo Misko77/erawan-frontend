@@ -1,4 +1,5 @@
 import { Anchor, Button, Group, Paper, Select, SimpleGrid, Stack, Title } from '@mantine/core';
+import { DatePickerInput } from '@mantine/dates';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { IconChevronLeft } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -7,10 +8,12 @@ import { getMembers } from '../api/members.ts';
 import { createPayment, paymentTypeOptions, type PaymentType } from '../api/payments.ts';
 import { useApi } from '../api/useApi.ts';
 import ErrorAlert from '../components/ErrorAlert.tsx';
+import { todayIsoDate } from '../utils/format.ts';
 
 type FormValues = {
   memberId: string | null;
   type: PaymentType | null;
+  paidAt: string;
 };
 
 function NewPaymentPage() {
@@ -31,11 +34,12 @@ function NewPaymentPage() {
 
   const form = useForm<FormValues>({
     mode: 'uncontrolled',
-    initialValues: { memberId: presetMemberId, type: null },
+    initialValues: { memberId: presetMemberId, type: null, paidAt: todayIsoDate() },
     validateInputOnBlur: true,
     validate: {
       memberId: isNotEmpty('Vyberte člena'),
       type: isNotEmpty('Vyberte typ platby'),
+      paidAt: isNotEmpty('Zadajte dátum platby'),
     },
   });
 
@@ -43,7 +47,7 @@ function NewPaymentPage() {
     setSaving(true);
     setError(undefined);
     try {
-      await createPayment({ memberId: Number(values.memberId), type: values.type! });
+      await createPayment({ memberId: Number(values.memberId), type: values.type!, paidAt: values.paidAt });
       navigate(backTo, { replace: true });
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
@@ -88,6 +92,15 @@ function NewPaymentPage() {
                 allowDeselect={false}
                 key={form.key('type')}
                 {...form.getInputProps('type')}
+              />
+              <DatePickerInput
+                label="Dátum platby"
+                valueFormat="DD.MM.YYYY"
+                placeholder="dd.mm.rrrr"
+                withAsterisk
+                maxDate={todayIsoDate()}
+                key={form.key('paidAt')}
+                {...form.getInputProps('paidAt')}
               />
             </SimpleGrid>
 

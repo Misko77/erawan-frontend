@@ -7,6 +7,8 @@ export type Payment = {
   memberId: number
   type: PaymentType
   amount: number
+  /** Date the payment was actually made, "YYYY-MM-DD". */
+  paidAt: string
   createdAt: string
   updatedAt: string | null
 }
@@ -47,6 +49,8 @@ export function getMemberPayments(memberId: string | number, signal?: AbortSigna
 export type CreatePaymentRequest = {
   memberId: number
   type: PaymentType
+  /** "YYYY-MM-DD" */
+  paidAt: string
 }
 
 /** POST /payments. The amount is priced by the server from the payment type. */
@@ -54,9 +58,15 @@ export function createPayment(request: CreatePaymentRequest) {
   return apiRequest<Payment>('POST', '/payments', { body: request })
 }
 
-/** PUT /payments/{id}. Only the type can change; the server re-prices the amount. */
-export function updatePayment(id: number, type: PaymentType) {
-  return apiRequest<Payment>('PUT', `/payments/${encodeURIComponent(id)}`, { body: { type } })
+export type UpdatePaymentRequest = {
+  type: PaymentType
+  /** "YYYY-MM-DD" */
+  paidAt: string
+}
+
+/** PUT /payments/{id}. Type and payment date can change; the server re-prices the amount from the type. */
+export function updatePayment(id: number, request: UpdatePaymentRequest) {
+  return apiRequest<Payment>('PUT', `/payments/${encodeURIComponent(id)}`, { body: request })
 }
 
 export type PaymentTotal = {
