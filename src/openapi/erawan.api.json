@@ -616,7 +616,8 @@
       "CreatePaymentRequest": {
         "required": [
           "memberId",
-          "type"
+          "type",
+          "paidAt"
         ],
         "type": "object",
         "properties": {
@@ -630,6 +631,10 @@
           },
           "type": {
             "$ref": "#/components/schemas/PaymentType"
+          },
+          "paidAt": {
+            "type": "string",
+            "format": "date"
           }
         }
       },
@@ -728,12 +733,17 @@
       },
       "UpdatePaymentRequest": {
         "required": [
-          "type"
+          "type",
+          "paidAt"
         ],
         "type": "object",
         "properties": {
           "type": {
             "$ref": "#/components/schemas/PaymentType"
+          },
+          "paidAt": {
+            "type": "string",
+            "format": "date"
           }
         }
       },

@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import { useMemo } from 'react'
 import { getMemberPayments, paymentTypeBadge, paymentTypeLabels } from '../api/payments.ts'
 import { useApi } from '../api/useApi.ts'
-import { formatCurrency, formatDateTime } from '../utils/format.ts'
+import { formatCurrency, formatDate } from '../utils/format.ts'
 import ErrorAlert from './ErrorAlert.tsx'
 
 
@@ -16,7 +16,7 @@ function MemberPayments({ memberId }: { memberId: string | number }) {
 
   // Newest first
   const payments = useMemo(
-    () => [...(data ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    () => [...(data ?? [])].sort((a, b) => b.paidAt.localeCompare(a.paidAt)),
     [data],
   )
   const total = payments.reduce((sum, p) => sum + p.amount, 0)
@@ -56,7 +56,7 @@ function MemberPayments({ memberId }: { memberId: string | number }) {
                 {payments.length > 0 ? (
                   payments.map((payment) => (
                     <Table.Tr key={payment.id}>
-                      <Table.Td>{formatDateTime(payment.createdAt)}</Table.Td>
+                      <Table.Td>{formatDate(payment.paidAt)}</Table.Td>
                       <Table.Td>
                         <Badge {...(paymentTypeBadge[payment.type] ?? { color: 'gray', variant: 'light' })}>
                           {paymentTypeLabels[payment.type] ?? payment.type}

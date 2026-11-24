@@ -1,4 +1,5 @@
 import { Badge, Button, Center, Group, Loader, Modal, Paper, Select, Stack, Table, Text, Title } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
 import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { Link } from 'react-router'
@@ -14,7 +15,7 @@ import {
 } from '../api/payments.ts'
 import { useApi } from '../api/useApi.ts'
 import ErrorAlert from '../components/ErrorAlert.tsx'
-import { formatCurrency, formatDateTime } from '../utils/format.ts'
+import { formatCurrency, formatDate, formatDateTime, todayIsoDate } from '../utils/format.ts'
 
 function EditPaymentModal({
   payment,
@@ -27,16 +28,20 @@ function EditPaymentModal({
   onClose: () => void
   onSaved: () => void
 }) {
+  const originalPaidAt = payment?.paidAt ?? null
   const [type, setType] = useState<PaymentType | null>(payment?.type ?? null)
+  const [paidAt, setPaidAt] = useState<string | null>(originalPaidAt)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<Error>()
 
+  const changed = type !== payment?.type || paidAt !== originalPaidAt
+
   const handleSave = async () => {
-    if (!payment || !type) return
+    if (!payment || !type || !paidAt) return
     setSaving(true)
     setError(undefined)
     try {
-      await updatePayment(payment.id, type)
+      await updatePayment(payment.id, { type, paidAt })
       onSaved()
       onClose()
     } catch (e) {
@@ -55,10 +60,16 @@ function EditPaymentModal({
             <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Člen</Text>
             <Text>{memberName}</Text>
           </div>
-          <div>
-            <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Dátum</Text>
-            <Text>{formatDateTime(payment.createdAt)}</Text>
-          </div>
+          <DatePickerInput
+            label="Dátum platby"
+            valueFormat="DD.MM.YYYY"
+            placeholder="dd.mm.rrrr"
+            maxDate={todayIsoDate()}
+            value={paidAt}
+            onChange={setPaidAt}
+            description={`Vytvorené: ${formatDateTime(payment.createdAt)}`}
+            error={!paidAt ? 'Zadajte dátum platby' : undefined}
+          />
           <Select
             label="Typ"
             data={paymentTypeOptions}
@@ -71,7 +82,7 @@ function EditPaymentModal({
             <Button variant="default" onClick={onClose} disabled={saving}>
               Zrušiť
             </Button>
-            <Button onClick={handleSave} loading={saving} disabled={!type || type === payment.type}>
+            <Button onClick={handleSave} loading={saving} disabled={!type || !paidAt || !changed}>
               Uložiť
             </Button>
           </Group>
@@ -100,7 +111,7 @@ function PaymentsPage() {
       aria-label={'Upraviť platbu ' + payment.id}
       style={{ cursor: 'pointer' }}
     >
-      <Table.Td>{formatDateTime(payment.createdAt)}</Table.Td>
+      <Table.Td>{formatDate(payment.paidAt)}</Table.Td>
       <Table.Td>{memberName(payment.memberId)}</Table.Td>
       <Table.Td>
         <Badge {...(paymentTypeBadge[payment.type] ?? { color: 'gray', variant: 'light' })}>
