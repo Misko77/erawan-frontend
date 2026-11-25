@@ -2,10 +2,13 @@ import { apiGet, apiRequest } from './client.ts'
 
 export type PaymentType = 'Single' | 'Bulk10' | 'SinglePrivate' | 'Bulk5Private' | 'SingleRecommendation'
 
+export type PaymentMethodType = 'BankTransfer' | 'Cash'
+
 export type Payment = {
   id: number
   memberId: number
   type: PaymentType
+  paymentMethodType: PaymentMethodType
   amount: number
   /** Date the payment was actually made, "YYYY-MM-DD". */
   paidAt: string
@@ -38,6 +41,16 @@ export const paymentTypeOptions = (Object.keys(paymentTypeLabels) as PaymentType
   label: paymentTypeLabels[value],
 }))
 
+export const paymentMethodTypeLabels: Record<PaymentMethodType, string> = {
+  BankTransfer: 'Prevodom',
+  Cash: 'Hotovosť',
+}
+
+export const paymentMethodTypeOptions = (Object.keys(paymentMethodTypeLabels) as PaymentMethodType[]).map((value) => ({
+  value,
+  label: paymentMethodTypeLabels[value],
+}))
+
 export function getPayments(signal?: AbortSignal) {
   return apiGet<Payment[]>('/payments', signal)
 }
@@ -49,6 +62,7 @@ export function getMemberPayments(memberId: string | number, signal?: AbortSigna
 export type CreatePaymentRequest = {
   memberId: number
   type: PaymentType
+  paymentMethodType: PaymentMethodType
   /** "YYYY-MM-DD" */
   paidAt: string
 }
@@ -60,6 +74,7 @@ export function createPayment(request: CreatePaymentRequest) {
 
 export type UpdatePaymentRequest = {
   type: PaymentType
+  paymentMethodType: PaymentMethodType
   /** "YYYY-MM-DD" */
   paidAt: string
 }
