@@ -5,7 +5,13 @@ import { IconChevronLeft } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { getMembers } from '../api/members.ts';
-import { createPayment, paymentTypeOptions, type PaymentType } from '../api/payments.ts';
+import {
+  createPayment,
+  paymentMethodTypeOptions,
+  paymentTypeOptions,
+  type PaymentMethodType,
+  type PaymentType,
+} from '../api/payments.ts';
 import { useApi } from '../api/useApi.ts';
 import ErrorAlert from '../components/ErrorAlert.tsx';
 import { todayIsoDate } from '../utils/format.ts';
@@ -13,6 +19,7 @@ import { todayIsoDate } from '../utils/format.ts';
 type FormValues = {
   memberId: string | null;
   type: PaymentType | null;
+  paymentMethodType: PaymentMethodType | null;
   paidAt: string;
 };
 
@@ -34,11 +41,12 @@ function NewPaymentPage() {
 
   const form = useForm<FormValues>({
     mode: 'uncontrolled',
-    initialValues: { memberId: presetMemberId, type: null, paidAt: todayIsoDate() },
+    initialValues: { memberId: presetMemberId, type: null, paymentMethodType: null, paidAt: todayIsoDate() },
     validateInputOnBlur: true,
     validate: {
       memberId: isNotEmpty('Vyberte člena'),
       type: isNotEmpty('Vyberte typ platby'),
+      paymentMethodType: isNotEmpty('Vyberte spôsob platby'),
       paidAt: isNotEmpty('Zadajte dátum platby'),
     },
   });
@@ -47,7 +55,12 @@ function NewPaymentPage() {
     setSaving(true);
     setError(undefined);
     try {
-      await createPayment({ memberId: Number(values.memberId), type: values.type!, paidAt: values.paidAt });
+      await createPayment({
+        memberId: Number(values.memberId),
+        type: values.type!,
+        paymentMethodType: values.paymentMethodType!,
+        paidAt: values.paidAt,
+      });
       navigate(backTo, { replace: true });
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
@@ -92,6 +105,15 @@ function NewPaymentPage() {
                 allowDeselect={false}
                 key={form.key('type')}
                 {...form.getInputProps('type')}
+              />
+              <Select
+                label="Spôsob platby"
+                withAsterisk
+                placeholder="Vyberte spôsob"
+                data={paymentMethodTypeOptions}
+                allowDeselect={false}
+                key={form.key('paymentMethodType')}
+                {...form.getInputProps('paymentMethodType')}
               />
               <DatePickerInput
                 label="Dátum platby"

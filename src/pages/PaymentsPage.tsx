@@ -1,21 +1,46 @@
-import { Badge, Button, Center, Group, Loader, Modal, Paper, Select, Stack, Table, Text, Title } from '@mantine/core'
+import { Badge, Button, Center, Group, Loader, Modal, Paper, Select, Stack, Table, Text, TextInput, Title, Tooltip } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
-import { IconPlus } from '@tabler/icons-react'
+import { IconArrowRight, IconCurrencyEuro, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { getMembers } from '../api/members.ts'
 import {
   getPayments,
+  paymentMethodTypeLabels,
+  paymentMethodTypeOptions,
   paymentTypeBadge,
   paymentTypeLabels,
   paymentTypeOptions,
   updatePayment,
   type Payment,
+  type PaymentMethodType,
   type PaymentType,
 } from '../api/payments.ts'
 import { useApi } from '../api/useApi.ts'
 import ErrorAlert from '../components/ErrorAlert.tsx'
 import { formatCurrency, formatDate, formatDateTime, todayIsoDate } from '../utils/format.ts'
+
+const paymentMethodIcons: Record<PaymentMethodType, typeof IconCurrencyEuro> = {
+  BankTransfer: IconArrowRight,
+  Cash: IconCurrencyEuro,
+}
+
+function PaymentMethodIcon({ method }: { method: PaymentMethodType | undefined }) {
+  const Icon = method ? paymentMethodIcons[method] : undefined
+  if (!method || !Icon) return null
+  const label = paymentMethodTypeLabels[method]
+  return (
+    <Tooltip label={label}>
+      <Icon
+        size={20}
+        stroke={2.5}
+        color="var(--mantine-color-yellow-filled)"
+        aria-label={label}
+        style={{ display: 'block' }}
+      />
+    </Tooltip>
+  )
+}
 
 function EditPaymentModal({
   payment,
@@ -28,20 +53,23 @@ function EditPaymentModal({
   onClose: () => void
   onSaved: () => void
 }) {
-  const originalPaidAt = payment?.paidAt ?? null
   const [type, setType] = useState<PaymentType | null>(payment?.type ?? null)
-  const [paidAt, setPaidAt] = useState<string | null>(originalPaidAt)
+  const [paymentMethodType, setPaymentMethodType] = useState<PaymentMethodType | null>(
+    payment?.paymentMethodType ?? null,
+  )
+  const [paidAt, setPaidAt] = useState<string | null>(payment?.paidAt ?? null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<Error>()
 
-  const changed = type !== payment?.type || paidAt !== originalPaidAt
+  const changed =
+    type !== payment?.type || paymentMethodType !== payment?.paymentMethodType || paidAt !== payment?.paidAt
 
   const handleSave = async () => {
-    if (!payment || !type || !paidAt) return
+    if (!payment || !type || !paymentMethodType || !paidAt) return
     setSaving(true)
     setError(undefined)
     try {
-      await updatePayment(payment.id, { type, paidAt })
+      await updatePayment(payment.id, { type, paymentMethodType, paidAt })
       onSaved()
       onClose()
     } catch (e) {
@@ -52,7 +80,11 @@ function EditPaymentModal({
   }
 
   return (
-    <Modal opened={payment !== undefined} onClose={onClose} title="Upraviť platbu" centered>
+    <Modal opened={payment !== undefined} onClose={onClose} title="Upraviť platbu"
+      centered
+      // Modal already renders the title as <h2>; style it as a heading instead of nesting a <Title>.
+      styles={{ title: { fontSize: 'var(--mantine-h3-font-size)', fontWeight: 'var(--mantine-h3-font-weight)' } }}
+    >
       {payment && (
         <Stack>
           {error && <ErrorAlert error={error} title="Uloženie zlyhalo" />}
@@ -60,6 +92,7 @@ function EditPaymentModal({
             <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Člen</Text>
             <Text>{memberName}</Text>
           </div>
+          <TextInput label="Vytvorené" value={formatDateTime(payment.createdAt)} readOnly />
           <DatePickerInput
             label="Dátum platby"
             valueFormat="DD.MM.YYYY"
@@ -67,7 +100,6 @@ function EditPaymentModal({
             maxDate={todayIsoDate()}
             value={paidAt}
             onChange={setPaidAt}
-            description={`Vytvorené: ${formatDateTime(payment.createdAt)}`}
             error={!paidAt ? 'Zadajte dátum platby' : undefined}
           />
           <Select
@@ -78,11 +110,20 @@ function EditPaymentModal({
             allowDeselect={false}
             description={type !== payment.type ? 'Suma sa prepočíta podľa nového typu' : undefined}
           />
+          <Select
+            label="Spôsob platby"
+            placeholder="Vyberte spôsob"
+            data={paymentMethodTypeOptions}
+            value={paymentMethodType}
+            onChange={(value) => setPaymentMethodType(value as PaymentMethodType | null)}
+            allowDeselect={false}
+            error={!paymentMethodType ? 'Vyberte spôsob platby' : undefined}
+          />
           <Group justify="flex-end" mt="sm">
             <Button variant="default" onClick={onClose} disabled={saving}>
               Zrušiť
             </Button>
-            <Button onClick={handleSave} loading={saving} disabled={!type || !paidAt || !changed}>
+            <Button onClick={handleSave} loading={saving} disabled={!type || !paymentMethodType || !paidAt || !changed}>
               Uložiť
             </Button>
           </Group>
@@ -118,6 +159,9 @@ function PaymentsPage() {
           {paymentTypeLabels[payment.type] ?? payment.type}
         </Badge>
       </Table.Td>
+      <Table.Td>
+        <PaymentMethodIcon method={payment.paymentMethodType} />
+      </Table.Td>
       <Table.Td ta="right">{formatCurrency(payment.amount)}</Table.Td>
     </Table.Tr>
   ))
@@ -147,13 +191,14 @@ function PaymentsPage() {
                   <Table.Th>Dátum</Table.Th>
                   <Table.Th>Člen</Table.Th>
                   <Table.Th>Typ</Table.Th>
+                  <Table.Th>Spôsob</Table.Th>
                   <Table.Th ta="right">Suma</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
                 {rows.length > 0 ? rows : (
                   <Table.Tr>
-                    <Table.Td colSpan={4}>
+                    <Table.Td colSpan={5}>
                       <Text c="dimmed" ta="center" py="md">Žiadne platby</Text>
                     </Table.Td>
                   </Table.Tr>

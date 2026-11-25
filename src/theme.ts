@@ -1,4 +1,4 @@
-import { createTheme, Table, type CSSVariablesResolver } from '@mantine/core'
+import { createTheme, Table, TextInput, type CSSVariablesResolver } from '@mantine/core'
 
 export const theme = createTheme({
   primaryColor: 'violet',
@@ -12,6 +12,21 @@ export const theme = createTheme({
           '--table-hover-color': 'light-dark(var(--mantine-color-violet-2), var(--mantine-color-dark-5))',
         },
       }),
+    }),
+    // Read-only inputs look like static values, not editable fields: darker/recessed background,
+    // dashed border, dimmed text. Most noticeable in dark theme where inputs otherwise look identical.
+    TextInput: TextInput.extend({
+      styles: (_theme, props) =>
+        props.readOnly
+          ? {
+              input: {
+                backgroundColor: 'light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8))',
+                borderStyle: 'dashed',
+                color: 'var(--mantine-color-dimmed)',
+                cursor: 'default',
+              },
+            }
+          : {},
     }),
   },
 })
